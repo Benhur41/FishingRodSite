@@ -1,26 +1,38 @@
-package com.home.login;
+package com.home.fishDAO;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class FishUser {
-//	ID              VARCHAR2(15)  
-//	PW              VARCHAR2(15)  
-//	NAME            VARCHAR2(10)  
-//	ADDRESS         VARCHAR2(100) 
-//	PHONE_NUM       VARCHAR2(15)  
-//	FISHING_ROD1    VARCHAR2(30)  
-//	FISHING_ROD2    VARCHAR2(30)  
-//	FISHING_ROD3    VARCHAR2(30)
 	
 	private String id;
 	private String pw;
 	private String name;
+	private String nickName;
 	private String address;
-	private String phoneNum;
+	private String customerPhone;
+	private String customerGrade;
 	private String fishingRod1;
 	private String fishingRod2;
 	private String fishingRod3;
 	private String fishingRod4;
 	private String fishingRod5;
+	private int repairCount;
 	
+	public int getRepairCount() {
+		return repairCount;
+	}
+	public void setRepairCount(int repairCount) {
+		this.repairCount = repairCount;
+	}
+	public String getNickName() {
+		return nickName;
+	}
+	public void setNick_name(String nickName) {
+		this.nickName = nickName;
+	}
 	public String getId() {
 		return id;
 	}
@@ -45,11 +57,17 @@ public class FishUser {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public String getPhoneNum() {
-		return phoneNum;
+	public String getCustomerPhone() {
+		return customerPhone;
 	}
-	public void setPhoneNum(String phoneNum) {
-		this.phoneNum = phoneNum;
+	public void setCustomerPhone(String customerPhone) {
+		this.customerPhone = customerPhone;
+	}
+	public String getCustomerGrade() {
+		return customerGrade;
+	}
+	public void setCustomerGrade(String customerGrade) {
+		this.customerGrade = customerGrade;
 	}
 	public String getFishingRod1() {
 		return fishingRod1;
@@ -81,6 +99,9 @@ public class FishUser {
 	public void setFishingRod5(String fishingRod5) {
 		this.fishingRod5 = fishingRod5;
 	}
+	
+	
+	
 	
 	
 }
