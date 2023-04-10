@@ -11,7 +11,7 @@ public class Request {
 	private int num;
 	private String nickName;
 	private String repair;
-	private int discountPrice;
+	private double discountPrice;
 	private int rpNum;
 	private String state;
 	private int count;
@@ -41,10 +41,10 @@ public class Request {
 	public void setNickName(String nickName) {
 		this.nickName = nickName;
 	}
-	public int getDiscountPrice() {
+	public double getDiscountPrice() {
 		return discountPrice;
 	}
-	public void setDiscountPrice(int discountPrice) {
+	public void setDiscountPrice(double discountPrice) {
 		this.discountPrice = discountPrice;
 	}
 	public int getRpNum() {

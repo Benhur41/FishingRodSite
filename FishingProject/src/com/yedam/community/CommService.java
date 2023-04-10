@@ -32,7 +32,7 @@ public class CommService {
 		System.out.printf("no.%d	|	%s				\n",comm.getCoNum() , comm.getTitle());
 		System.out.println("작성자 : "+comm.getNickName()+"   작성일 : "+comm.getWriteDate());
 		System.out.println("-------------------------------------------------------------------------");
-		System.out.printf("	  %40s\n",comm.getContent());
+		System.out.printf("	  %-40s\n",comm.getContent());
 		System.out.println();
 		System.out.println();
 		System.out.println();

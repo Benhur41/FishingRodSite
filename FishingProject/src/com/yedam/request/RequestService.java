@@ -18,6 +18,11 @@ public class RequestService {
 		}
 	}
 	
+	//saverq 조회
+	public void getMyFinish() {
+		Request rq = RequestDAO.getInstance().getMyFinish();
+		System.out.printf("수리명 : %-5s  |  할인가 : %f  |  상태  :  %s \n",rq.getRepair(),rq.getDiscountPrice(),rq.getState());
+	}
 	
 	//본인 신청 조회
 	public void getMyRequestList() {
@@ -33,7 +38,7 @@ public class RequestService {
 		System.out.println("수리현황 갱신할 글 번호를 입력해주세요");
 		System.out.println("입력 >");
 		int num = Integer.parseInt(sc.nextLine());
-		System.out.println("갱신할 상태 입력해주세요 (R: 수리중 P: 배송중 N: 수리전)");
+		System.out.println("갱신할 상태 입력해주세요 (R: 수리중 P: 배송중 N: 수리 )");
 		System.out.println("입력 >");
 		String state = sc.nextLine();
 		
@@ -110,8 +115,26 @@ public class RequestService {
 		
 	}
 	
-	
-	
+	//delete + Insert into saverq
+	public void repairCountUp() {
+		System.out.println("완료할 신청글의 번호를 선택하세요.");
+		System.out.println("입력 >");
+		int no = Integer.parseInt(sc.nextLine());
+		Request rq = RequestDAO.getInstance().getRequest(no);
+		
+		int result = RequestDAO.getInstance().deleteRequest(no);
+		if(result > 0) {
+			result = RequestDAO.getInstance().putSaveRq(rq);
+			if(result > 0 ) {
+				System.out.println("신청횟수 갱신에 성공했습니다");
+			}else {
+				System.out.println("신청횟수 갱신에 실패했습니다.");
+			}
+		}else {
+			System.out.println("삭제 실패하였습니다.");
+		}
+		
+	}
 	
 	
 	

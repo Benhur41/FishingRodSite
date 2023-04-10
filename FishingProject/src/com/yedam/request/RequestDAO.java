@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.home.common.DAO;
+import com.home.exe.FishExe;
 
 public class RequestDAO extends DAO {
 //		try {
@@ -150,6 +151,32 @@ public class RequestDAO extends DAO {
 		return result;
 	}
 	
+	//saveRq 에 넣기
+	public int putSaveRq(Request r) {
+		int result = 0;
+		try {
+			conn();
+			String sql = "INSERT INTO saverq VALUES (?,?,'완')";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, r.getNickName());
+			pstmt.setInt(2, r.getRpNum());
+			
+			result = pstmt.executeUpdate();
+			if(result > 0) {
+				String sql2 = "UPDATE fishuser SET repair_count = repair_count +1 WHERE nick_name = ?";
+				pstmt = conn.prepareStatement(sql2);
+				pstmt.setString(1, r.getNickName());
+				
+				result = pstmt.executeUpdate();
+			}
+			
+		}catch(Exception e) {
+		e.printStackTrace();
+		}finally {
+		disconn();
+		}
+		return result;
+	}
 	
 	//수리요청 순위
 	public List<Request> getRanking(){
@@ -202,7 +229,58 @@ public class RequestDAO extends DAO {
 		return result;
 	}
 	
+	//request 단일 조회
+	public Request getRequest(int no) {
+		Request rq = null;
+		try {
+			conn();
+			String sql ="SELECT * FROM request WHERE num =?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, no);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				rq = new Request();
+				rq.setNickName(rs.getString("nick_name"));
+				rq.setRpNum(rs.getInt("rp_num"));
+			}
+		}catch(Exception e) {
+		e.printStackTrace();
+		}finally {
+		disconn();
+		}
+		return rq;
+	}
 	
+	//본인의 완료된 request 조회 
+	public Request getMyFinish() {
+		Request rq = null;
+		try {
+			conn();
+			String sql = "SELECT repair , decode( customer_grade , 'A' ,price*0.9,\r\n"
+					+ "                                        'B' , price*0.95,\r\n"
+					+ "                                        'C' , price*0.98) as \"discount\",state\r\n"
+					+ "FROM repair \r\n"
+					+ "join request USING (rp_num)\r\n"
+					+ "join fishuser USING (nick_name)\r\n"
+					+ "WHERE nick_name = ?";
+			
+			pstmt =conn.prepareStatement(sql);
+			pstmt.setString(1, FishExe.fishUserInfo.getNickName());
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				rq = new Request();
+				rq.setRepair(rs.getString("repair"));
+				rq.setDiscountPrice(rs.getDouble("discount"));
+				rq.setState(rs.getString("state"));
+				
+			}
+		}catch(Exception e) {
+		e.printStackTrace();
+		}finally {
+		disconn();
+		}
+		return rq;
+	}
 	
 	
 }

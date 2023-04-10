@@ -18,6 +18,7 @@ public class FishExe {
 	
 	public static FishUser fishUserInfo = null;
 	public static Community communityInfo = null;
+	
 	public FishExe() {
 		run();
 	}
@@ -56,20 +57,23 @@ public class FishExe {
 		int menu = 0;
 		if(FishExe.fishUserInfo != null) {
 		while(true) {
-			System.out.println("1. 수리 신청 현황  2. 낚싯대 수리요청 종류 순위  3.사용자 낚싯대 브랜드 순위 4. 회원조회  5. 단일 회원조회  6. 회원삭제  7. 게시판 글 조회 ->게시판 글 삭제  8. 로그아웃");
+			System.out.println("1. 수리 신청 현황  2. 낚싯대 수리요청 종류 순위  3.사용자 낚싯대 브랜드 순위 4. 회원조회  5. 단일 회원조회  6. 회원삭제  7. 게시판 관리  8. 로그아웃");
 			System.out.println("번호 입력 >");
 			menu = Integer.parseInt(sc.nextLine());
 			if (menu == 1) {
 				// 수리 테이블 전체 조회 -> 삭제 /갱신
 				while(true) {
 					rs.getRequestList();
-					System.out.println(" 1. 신청글 삭제  |  2. 수리현황 갱신  | 3. 뒤로가기  ");
+					System.out.println(" 1. 신청글 삭제  |  2. 수리현황 갱신  | 3. 수리 완료  | 4. 나가기  ");
 					int selectNo = Integer.parseInt(sc.nextLine());
 					if(selectNo == 1) {
 						rs.deleteRequest();
 					}else if(selectNo == 2) {
 						rs.updateState();
 					}else if(selectNo == 3) {
+						//수리완료시 삭제하고 saverq 로 넘어가게 하기
+						rs.repairCountUp();
+					}else if(selectNo == 4) {
 						break;
 					}
 				}
@@ -90,7 +94,7 @@ public class FishExe {
 			}else if(menu == 7) {
 				//게시판 글 조회 /삭제
 				//삭제기능
-				deleteOrNot();
+				commScreen();
 			}else if(menu ==8) {
 				//로그아웃
 				FishExe.fishUserInfo =null;
@@ -196,7 +200,7 @@ public class FishExe {
 			
 		}
 	}
-	
+	//관리자 글 조회 후 삭제 기능
 	private void deleteOrNot() {
 		while(true) {
 			cs.getCommList();

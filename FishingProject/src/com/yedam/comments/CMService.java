@@ -14,7 +14,7 @@ public class CMService {
 		List<Comments> list = CommentsDAO.getInstance().getCmList(no);
 		
 		for(Comments c : list) {
-			System.out.printf("%3d)  %20s 		              작성자 : %10s  작성일 : %s 추천수 : %3d\n",c.getNum() , c.getContent() , c.getNickName(), c.getWriteDate() , c.getRecommand()	);
+			System.out.printf("%3d)  %-30s 		  작성자 : %-10s  작성일 : %s 추천수 : %-3d\n",c.getNum() , c.getContent() , c.getNickName(), c.getWriteDate() , c.getRecommand()	);
 		}
 	}
 	
