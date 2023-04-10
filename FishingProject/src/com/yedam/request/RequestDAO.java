@@ -1,4 +1,4 @@
-package com.home.fishDAO;
+package com.yedam.request;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,12 +6,12 @@ import java.util.List;
 import com.home.common.DAO;
 
 public class RequestDAO extends DAO {
-//	try {
+//		try {
 //		conn();
 //	}catch(Exception e) {
-//		e.printStackTrace();
+//	e.printStackTrace();
 //	}finally {
-//		disconn();
+//	disconn();
 //	}
 	private static RequestDAO requestDao = new RequestDAO();
 	
@@ -87,7 +87,7 @@ public class RequestDAO extends DAO {
 			
 			while(rs.next()) {
 				request = new Request();
-				request.setNum(rs.getInt("num"));
+//				request.setNum(rs.getInt("num"));
 				request.setNickName(rs.getString("nick_name"));
 				request.setRepair(rs.getString("repair"));
 				request.setState(rs.getString("state"));
@@ -114,6 +114,7 @@ public class RequestDAO extends DAO {
 			pstmt.setInt(2, num);
 			
 			result = pstmt.executeUpdate();
+			
 		}catch(Exception e) {
 			e.printStackTrace();
 		}finally {
@@ -178,7 +179,28 @@ public class RequestDAO extends DAO {
 		return list;
 	}
 	
+	//본인 신청글 조회
 	
+	//신청글 작성
+	public int writeRq (Request r) {
+		int result = 0;
+		try {
+			conn();
+			String sql = "INSERT INTO request VALUES ((SELECT max(num)FROM request)+1,?,?,?)";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, r.getNickName());
+			pstmt.setInt(2, r.getRpNum());
+			pstmt.setString(3, r.getState());
+			
+			result = pstmt.executeUpdate();
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			disconn();
+		}
+		return result;
+	}
 	
 	
 	

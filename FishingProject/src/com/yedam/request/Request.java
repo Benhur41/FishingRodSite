@@ -1,4 +1,4 @@
-package com.home.fishDAO;
+package com.yedam.request;
 
 
 public class Request {

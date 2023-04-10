@@ -1,10 +1,10 @@
 package com.home.fishDAO;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import com.home.exe.FishExe;
+import com.yedam.request.RequestService;
 
 public class FishService {
 	//김태연 0407 00:56 
@@ -205,22 +205,159 @@ public class FishService {
 		List<FishUser> list = FishDAO.getInstance().getUserList();
 		
 		for(FishUser f : list) {
-			System.out.println(" ID : " +f.getId()+ " | PW : " +f.getPw() +  " | 이름 : " +f.getName()+ " | 닉네임 : " +f.getNickName()+  " | 전화번호 : "+f.getCustomerPhone()+ " | 등급 : "+f.getCustomerGrade()+ " | 신청 횟수 : " + f.getRepairCount() );
-			System.out.println(" 낚싯대 1 : "+ f.getFishingRod1() + " |  낚싯대 2 : "+f.getFishingRod2()+" |  낚싯대 3 : "+f.getFishingRod3()+" | 낚싯대 4 : "+f.getFishingRod4()+ " | 낚싯대 5 : "+f.getFishingRod5());
+			System.out.printf(" ID : %-10s | PW : %-10s | 이름 : %-5s | 닉네임 : %-10s | 전화번호 : %s | 등급 : %s | 신청 횟수 : %-3d \n", f.getId(),f.getPw(),f.getName(),f.getNickName(),f.getCustomerPhone(),f.getCustomerGrade(),f.getRepairCount() );
+			System.out.printf(" 낚싯대 1 : %-10s |  낚싯대 2 : %-10s |  낚싯대 3 : %-10s | 낚싯대 4 : %-10s | 낚싯대 5 : %-10s\n", f.getFishingRod1(),f.getFishingRod2(),f.getFishingRod3(),f.getFishingRod4(),f.getFishingRod5());
 			System.out.println("--------------------------------------------------------------------------------------------------------------------------");
 		}
 	}
 	
+	//회원 단일 조회
+	public void getUser() {
+		System.out.println("조회할 회원의 아이디를 입력하세요.");
+		System.out.println("입력 >");
+		String id = sc.nextLine();
+		
+		FishUser f = FishDAO.getInstance().getUser(id);
+		System.out.printf(" ID : %-10s | PW : %-10s | 이름 : %-5s | 닉네임 : %-10s | 전화번호 : %s | 등급 : %s | 신청 횟수 : %-3d \n", f.getId(),f.getPw(),f.getName(),f.getNickName(),f.getCustomerPhone(),f.getCustomerGrade(),f.getRepairCount() );
+		System.out.printf(" 낚싯대 1 : %-10s |  낚싯대 2 : %-10s |  낚싯대 3 : %-10s | 낚싯대 4 : %-10s | 낚싯대 5 : %-10s\n", f.getFishingRod1(),f.getFishingRod2(),f.getFishingRod3(),f.getFishingRod4(),f.getFishingRod5());
+	}
 	
+	// 본인 조회
+	public void getMine() {
+		
+		FishUser f = FishDAO.getInstance().getUser(FishExe.fishUserInfo.getId());
+		System.out.printf(" ID : %-10s | PW : %-10s | 이름 : %-5s | 닉네임 : %-10s | 전화번호 : %s | 등급 : %s | 신청 횟수 : %-3d \n", f.getId(),f.getPw(),f.getName(),f.getNickName(),f.getCustomerPhone(),f.getCustomerGrade(),f.getRepairCount() );
+		System.out.printf(" 낚싯대 1 : %-10s |  낚싯대 2 : %-10s |  낚싯대 3 : %-10s | 낚싯대 4 : %-10s | 낚싯대 5 : %-10s\n", f.getFishingRod1(),f.getFishingRod2(),f.getFishingRod3(),f.getFishingRod4(),f.getFishingRod5());
+		System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------------");
+		RequestService rs = new RequestService();
+		rs.getMyRequestList();
+	}
 	
+	//회원 삭제 
+	public void deleteUser() {
+		System.out.println("삭제할 회원의 아이디를 입력해주세요.");
+		System.out.println("입력 >");
+		String id = sc.nextLine();
+		
+		int result = FishDAO.getInstance().deleteUser(id);
+		
+		if(result > 0 ) {
+			System.out.println("삭제에 성공하였습니다.");
+		}else {
+			System.out.println("삭제에 실패하였습니다.");
+		}
+	}
 	
+	//정보수정
+	public void fishUserUpdate() {
+		boolean run = true;
+		FishUser fishUser = null;
+		String reWrite ="";
+		int result = 0;
+		while(run) {
+		System.out.println("수정할 부분을 선택해주세요.");
+		System.out.println(" 1. pw  |  2. nick_name  |  3. name  |  4.  address  |  5.  phone  |  6.  fishingRod1  |  7. fishingRod2  |  8. fishingRod3  |  9. fishingRod4  |  10. fishingRod5   |  99. 뒤로가기");
+		int no = Integer.parseInt(sc.nextLine());
+		switch(no) {
+		case 1: 
+			update(no);
+			break;
+		case 2:
+			System.out.println("정보수정 >");
+			while(true) {
+				System.out.println("사용하실 nick name 을 입력해주세요. >");
+				reWrite = sc.nextLine();
+				FishUser fu = FishDAO.getInstance().login(reWrite);
+				if(fu == null) {
+					System.out.println("닉네임을 사용할 수 있습니다!");
+					break;
+				}else {
+					System.out.println("이미 사용중인 닉네임 입니다.");
+				}
+			}
+			result = FishDAO.getInstance().fishUserUpdate(reWrite, no);
+			if(result > 0) {
+				System.out.println("수정에 성공하였습니다.");
+			}else {
+				System.out.println("수정에 실패하였습니다.");
+			}
+			break;
+		case 3:
+			update(no);
+			break;
+		case 4:
+			update(no);
+			break;
+		case 5:
+			update(no);
+			break;
+		case 6:
+			updateRod(no);
+			break;
+		case 7:
+			updateRod(no);
+			break;
+		case 8:
+			updateRod(no);
+			break;
+		case 9:
+			updateRod(no);
+			break;
+		case 10:
+			updateRod(no);
+			break;
+		case 99:
+			run = false;
+			break;
+		}
+		}
+		
+	}
 	
+	//정보수정 -수정기능
+	private int update(int no) {
+		int result =0;
+		String reWrite="";
+		System.out.println("새롭게 사용할 정보를 입력해주세요. >");
+		reWrite = sc.nextLine();
+		result = FishDAO.getInstance().fishUserUpdate(reWrite, no);
+		if(result > 0) {
+			System.out.println("수정에 성공하였습니다.");
+		}else {
+			System.out.println("수정에 실패하였습니다.");
+		}
+		return result;
+	}
 	
-	
-	
-	
-	
-	
+	//정보수정 -낚싯대 수정기능
+	private int updateRod(int no) {
+		String reWrite ="";
+		int result = 0;
+		System.out.println("새롭게 등록하실 낚싯대의 제품브랜드를 선택해주세요 >");
+		System.out.println("1. 다이와  |  2.  시마노  |  3.  은성  |  4.  바낙스  | 5. ns  ");
+		int num = Integer.parseInt(sc.nextLine());
+		if(num == 1) {
+			reWrite = "daiwa:";
+		}else if (num == 2) {
+			reWrite = "shimano:";
+		}else if (num == 3) {
+			reWrite = "eunsung:";
+		}else if (num == 4) {
+			reWrite = "banax:";
+		}else if (num == 5) {
+			reWrite = "ns:";
+		}
+		System.out.println("제품명을 입력해주세요");
+		String rodName = sc.nextLine();
+		reWrite += rodName;
+		result = FishDAO.getInstance().fishUserUpdate(reWrite, no);
+		if(result > 0) {
+			System.out.println("수정에 성공하였습니다.");
+		}else {
+			System.out.println("수정에 실패하였습니다.");
+		}
+		return result;
+	}
 	
 	
 }

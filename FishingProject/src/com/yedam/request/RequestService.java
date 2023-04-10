@@ -1,4 +1,4 @@
-package com.home.fishDAO;
+package com.yedam.request;
 
 import java.util.List;
 import java.util.Scanner;
@@ -14,16 +14,17 @@ public class RequestService {
 		List<Request> list = RequestDAO.getInstance().getRequstList();
 		
 		for(Request r : list) {
-			System.out.println("no." + r.getNum()+" | 작성자 : "+r.getNickName() + " | 수리내용 : " + r.getRepair()+ " | 수리현황 : " + r.getState() + " | 가격 : " + r.getDiscountPrice());
+			System.out.printf("no. %3d | 작성자 : %10s | 수리내용 : %5s | 수리현황 : %5s | 가격 : %5d\n" , r.getNum(),r.getNickName(), r.getRepair(), r.getState(), r.getDiscountPrice());
 		}
 	}
+	
 	
 	//본인 신청 조회
 	public void getMyRequestList() {
 		List<Request> list = RequestDAO.getInstance().getMyRequstList(FishExe.fishUserInfo.getNickName());
 		
 		for(Request r : list) {
-			System.out.println("no." + r.getNum()+" 작성자 : "+r.getNickName() + " 수리내용 : " + r.getRepair()+ " 수리현황 : " + r.getState() + " 가격 : " + r.getDiscountPrice());
+			System.out.println(" 작성자 : "+r.getNickName() + " 수리내용 : " + r.getRepair()+ " 수리현황 : " + r.getState() + " 가격 : " + r.getDiscountPrice());
 		}
 	}
 	
@@ -69,10 +70,45 @@ public class RequestService {
 		}
 	}
 	
+	//수리 신청글 작성
+	public void writeRq() {
+		int result = 0;
+		Request request = null;
+		System.out.println("원하시는 수리를 선택해주세요 >");
+		System.out.println(" 1. 세척/점검  |  2. 초리복원  |  3. 탑 교환  |  4. 손잡이대 복원  |  5. 가이드 교환  ");
+		
+		int selectNo = Integer.parseInt(sc.nextLine());
+		if(selectNo == 1) {
+			result = write(selectNo);
+		}else if(selectNo ==2) {
+			result = write(selectNo);
+		}else if(selectNo ==3) {
+			result = write(selectNo);
+		}else if(selectNo ==4) {
+			result = write(selectNo);
+		}else if(selectNo ==5) {
+			result = write(selectNo);
+		}
+		if(result > 0) {
+			System.out.println("신청에 성공하였습니다.");
+		}else {
+			System.out.println("신청에 실패하였습니다.");
+		}
+	}
 	
 	
-	
-	
+	//수리 신청글 method1
+	private int write(int selectNo) {
+		int result =0;
+		Request request = new Request();
+		request.setRpNum(selectNo);
+		request.setNickName(FishExe.fishUserInfo.getNickName());
+		request.setState("N");
+		result = RequestDAO.getInstance().writeRq(request);
+		
+		return result;
+		
+	}
 	
 	
 	

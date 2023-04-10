@@ -153,77 +153,53 @@ public class FishDAO extends DAO {
 	
 	//회원 삭제 기능 ( 글 불연속 번호 갱신 기능까지 같이 넣어야함 ! )
 	//회원 정보 수정 기능
-	public int fishUserUpdate(FishUser fu,int no) {
+	public int fishUserUpdate(String reWrite,int no) {
 		int result = 0;
 		try {
 			conn();
-			String sql = "UPDATE fishuser SET ? = ? WHERE id = ?";
-			pstmt = conn.prepareStatement(sql);
-			switch(no) {
-			case 1: 
-				pstmt.setString(1, "pw");
-				break;
-			case 2:
-				pstmt.setString(1, "nick_name");
-				break;
-			case 3:
-				pstmt.setString(1, "name");
-				break;
-			case 4:
-				pstmt.setString(1, "address");
-				break;
-			case 5:
-				pstmt.setString(1, "customer_phone");
-				break;
-			case 6:
-				pstmt.setString(1, "fishing_rod1");
-				break;
-			case 7:
-				pstmt.setString(1, "fishing_rod2");
-				break;
-			case 8:
-				pstmt.setString(1, "fishing_rod3");
-				break;
-			case 9:
-				pstmt.setString(1, "fishing_rod4");
-				break;
-			case 10:
-				pstmt.setString(1, "fishing_rod5");
-				break;
+			if(no ==1) {
+				String sql ="UPDATE fishuser SET pw = ? WHERE id = ?";
+				pstmt =conn.prepareStatement(sql);
+				pstmt.setString(1, reWrite);
+			}else if(no ==2) {
+				String sql ="UPDATE fishuser SET nick_name = ? WHERE id = ?";
+				pstmt =conn.prepareStatement(sql);
+				pstmt.setString(1, reWrite);
+			}else if(no ==3) {
+				String sql ="UPDATE fishuser SET name = ? WHERE id = ?";
+				pstmt =conn.prepareStatement(sql);
+				pstmt.setString(1, reWrite);
+			}else if(no ==4) {
+				String sql ="UPDATE fishuser SET address = ? WHERE id = ?";
+				pstmt =conn.prepareStatement(sql);
+				pstmt.setString(1, reWrite);
+			}else if(no ==5) {
+				String sql ="UPDATE fishuser SET customer_phone = ? WHERE id = ?";
+				pstmt =conn.prepareStatement(sql);
+				pstmt.setString(1, reWrite);
+			}else if(no ==6) {
+				String sql ="UPDATE fishuser SET fishing_rod1= ? WHERE id = ?";
+				pstmt =conn.prepareStatement(sql);
+				pstmt.setString(1, reWrite);
+			}else if(no ==7) {
+				String sql ="UPDATE fishuser SET fishing_rod2 = ? WHERE id = ?";
+				pstmt =conn.prepareStatement(sql);
+				pstmt.setString(1, reWrite);
+			}else if(no ==8) {
+				String sql ="UPDATE fishuser SET fishing_rod3 = ? WHERE id = ?";
+				pstmt =conn.prepareStatement(sql);
+				pstmt.setString(1, reWrite);
+			}else if(no ==9) {
+				String sql ="UPDATE fishuser SET fishing_rod4 = ? WHERE id = ?";
+				pstmt =conn.prepareStatement(sql);
+				pstmt.setString(1, reWrite);
+			}else if(no ==10) {
+				String sql ="UPDATE fishuser SET fishing_rod5 = ? WHERE id = ?";
+				pstmt =conn.prepareStatement(sql);
+				pstmt.setString(1, reWrite);
 			}
-			switch(no) {
-			case 1: 
-				pstmt.setString(2, fu.getPw());
-				break;
-			case 2:
-				pstmt.setString(2, fu.getNickName());
-				break;
-			case 3:
-				pstmt.setString(2, fu.getName());
-				break;
-			case 4:
-				pstmt.setString(2, fu.getAddress());
-				break;
-			case 5:
-				pstmt.setString(2, fu.getCustomerPhone());
-				break;
-			case 6:
-				pstmt.setString(2, fu.getFishingRod1());
-				break;   
-			case 7:      
-				pstmt.setString(2, fu.getFishingRod2());
-				break;   
-			case 8:      
-				pstmt.setString(2, fu.getFishingRod3());
-				break;   
-			case 9:      
-				pstmt.setString(2, fu.getFishingRod4());
-				break;   
-			case 10:     
-				pstmt.setString(2, fu.getFishingRod5());
-				break;
-			}
-			pstmt.setString(3, FishExe.fishUserInfo.getId());
+				
+			pstmt.setString(2, FishExe.fishUserInfo.getId());
 			
 			result = pstmt.executeUpdate();
 			
@@ -294,6 +270,59 @@ public class FishDAO extends DAO {
 		return list;
 	}
 	
+	//회원 단일 조회
+	public FishUser getUser(String id) {
+		FishUser fishUser = null;
+		try {
+			conn();
+			String sql = "SELECT * FROM fishUser WHERE id = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, id);
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				fishUser = new FishUser();
+				fishUser.setId(rs.getString("id"));
+				fishUser.setPw(rs.getString("pw"));
+				fishUser.setName(rs.getString("name"));
+				fishUser.setNick_name(rs.getString("nick_name"));
+				fishUser.setAddress(rs.getString("address"));
+				fishUser.setCustomerPhone(rs.getString("customer_phone"));
+				fishUser.setCustomerGrade(rs.getString("customer_grade"));
+				fishUser.setRepairCount(rs.getInt("repair_count"));
+				fishUser.setFishingRod1(rs.getString("fishing_rod1"));
+				fishUser.setFishingRod2(rs.getString("fishing_rod2"));
+				fishUser.setFishingRod3(rs.getString("fishing_rod3"));
+				fishUser.setFishingRod4(rs.getString("fishing_rod4"));
+				fishUser.setFishingRod5(rs.getString("fishing_rod5"));
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			disconn();
+		}
+		return fishUser;
+	}
+	
+	
+	//회원삭제
+	public int deleteUser(String id) {
+		int result = 0;
+		try {
+			conn();
+			String sql = "DELETE FROM fishuser WHERE id = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, id);
+			
+			result = pstmt.executeUpdate();
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			disconn();
+		}
+		return result;
+	}
 	
 	}
 

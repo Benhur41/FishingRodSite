@@ -1,10 +1,7 @@
 package com.home.fishDAO;
 
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
+
 public class FishUser {
 	
 	private String id;
