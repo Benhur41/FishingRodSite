@@ -157,12 +157,12 @@ public class RequestDAO extends DAO {
 		int result = 0;
 		try {
 			conn();
-			String sql = "INSERT INTO saverq VALUES (?,?,?,?,'완')";
+			String sql = "INSERT INTO saverq VALUES (?,?,?,'완')";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, r.getNickName());
 			pstmt.setString(2, r.getFishingRod());
 			pstmt.setInt(3, r.getRpNum());
-			pstmt.setDouble(4, r.getDiscountPrice());
+//			pstmt.setDouble(4, r.getDiscountPrice());
 			
 			result = pstmt.executeUpdate();
 			if(result > 0) {

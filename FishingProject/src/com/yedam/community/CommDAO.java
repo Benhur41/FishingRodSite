@@ -136,6 +136,12 @@ public class CommDAO extends DAO {
 			pstmt.setInt(1, coNum);
 			
 			result = pstmt.executeUpdate();
+			if(result > 0) {
+				String sql2 ="UPDATE community SET co_num = co_num -1 WHERE co_num > ?";
+				pstmt = conn.prepareStatement(sql2);
+				pstmt.setInt(1, coNum);
+				int result2 = pstmt.executeUpdate();
+			}
 		}catch(Exception e) {
 		e.printStackTrace();
 		}finally {

@@ -110,11 +110,20 @@ public class CommentsDAO extends DAO {
 		int result = 0;
 		try {
 			conn();
-			String sql = "DELETE FROM comments WHERE num = ?";
+			String sql = "DELETE FROM comments WHERE num = ? AND co_num = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, num);
+			pstmt.setInt(2, FishExe.communityInfo.getCoNum());
 			
 			result = pstmt.executeUpdate();
+			if(result >0) {
+				String sql2 = "UPDATE comments SET num = num - 1 WHERE co_num =? AND num > ?";
+				pstmt= conn.prepareStatement(sql2);
+				pstmt.setInt(1, FishExe.communityInfo.getCoNum());
+				pstmt.setInt(2, num);
+				
+				int result2 = pstmt.executeUpdate();
+			}
 		}catch(Exception e) {
 		e.printStackTrace();
 		}finally {
