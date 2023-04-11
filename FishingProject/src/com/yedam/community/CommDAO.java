@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.home.common.DAO;
+import com.home.exe.FishExe;
 
 public class CommDAO extends DAO {
 	
@@ -134,6 +135,40 @@ public class CommDAO extends DAO {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, coNum);
 			
+			result = pstmt.executeUpdate();
+		}catch(Exception e) {
+		e.printStackTrace();
+		}finally {
+		disconn();
+		}
+		return result;
+	}
+	
+	//글 추천 기능
+	public int recommandComm() {
+		int result = 0;
+		try {
+			conn();
+			String sql = "UPDATE community SET recommand = recommand + 1 WHERE co_num = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, FishExe.communityInfo.getCoNum());
+			result = pstmt.executeUpdate();
+		}catch(Exception e) {
+		e.printStackTrace();
+		}finally {
+		disconn();
+		}
+		return result;
+	}
+	
+	// 조회수 추가 기능
+	public int updateView(int no) {
+		int result = 0;
+		try {
+			conn();
+			String sql = "UPDATE community SET views = views +1 WHERE co_num = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, no);
 			result = pstmt.executeUpdate();
 		}catch(Exception e) {
 		e.printStackTrace();

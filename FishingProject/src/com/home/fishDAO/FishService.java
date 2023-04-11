@@ -1,5 +1,6 @@
 package com.home.fishDAO;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -110,12 +111,40 @@ public class FishService {
 		String pw = sc.nextLine();
 		
 		fishUser = FishDAO.getInstance().login(id);
-		
+		String grade = fishUser.getCustomerGrade();
 		if(fishUser != null) {
 			if(fishUser.getPw().equals(pw)) {
 			System.out.println("정상적으로 로그인 되었습니다.");
 			System.out.println(fishUser.getName() + "님 환영합니다 😁😁");
 			FishExe.fishUserInfo = fishUser;
+			if(FishExe.fishUserInfo.getRepairCount() >= 5) {
+				int result = FishDAO.getInstance().gradeUpdate(1);
+				if(result >0 ) {
+					FishUser fishUser2 = FishDAO.getInstance().login(id);
+					FishExe.fishUserInfo = fishUser2;
+					if(!grade.equals(FishExe.fishUserInfo.getCustomerGrade())) {
+						System.out.println("회원등급이 한단계 올랐습니다!");
+					}
+				}
+			}else if(FishExe.fishUserInfo.getRepairCount() >= 10) {
+				int result = FishDAO.getInstance().gradeUpdate(2);
+				if(result >0 ) {
+					FishUser fishUser2 = FishDAO.getInstance().login(id);
+					FishExe.fishUserInfo = fishUser2;
+					if(!grade.equals(FishExe.fishUserInfo.getCustomerGrade())) {
+						System.out.println("회원등급이 한단계 올랐습니다!");
+					}
+				}
+			}else if(FishExe.fishUserInfo.getRepairCount() >= 20) {
+				int result = FishDAO.getInstance().gradeUpdate(3);
+				if(result >0 ) {
+					FishUser fishUser2 = FishDAO.getInstance().login(id);
+					FishExe.fishUserInfo = fishUser2;
+					if(!grade.equals(FishExe.fishUserInfo.getCustomerGrade())) {
+						System.out.println("회원등급이 한단계 올랐습니다!");
+					}
+				}
+			}
 			break;
 			}else {
 				System.out.println("비밀번호를 틀리셨습니다.");
@@ -126,6 +155,7 @@ public class FishService {
 		
 	}
 	}
+	
 	
 	
 	//게시판 글 삭제 기능 ( 댓글 테이블에 관계된 댓글도 같이 삭제된다.)
@@ -229,10 +259,12 @@ public class FishService {
 		System.out.printf(" ID : %-10s | PW : %-10s | 이름 : %-5s | 닉네임 : %-10s | 전화번호 : %s | 등급 : %s | 신청 횟수 : %-3d \n", f.getId(),f.getPw(),f.getName(),f.getNickName(),f.getCustomerPhone(),f.getCustomerGrade(),f.getRepairCount() );
 		System.out.printf(" 낚싯대 1 : %-10s |  낚싯대 2 : %-10s |  낚싯대 3 : %-10s | 낚싯대 4 : %-10s | 낚싯대 5 : %-10s\n", f.getFishingRod1(),f.getFishingRod2(),f.getFishingRod3(),f.getFishingRod4(),f.getFishingRod5());
 		System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------------");
+		System.out.println("현재 작업 중인 수리 내용");
 		RequestService rs = new RequestService();
 		rs.getMyRequestList();
 		System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------------");
-		rs.getMyFinish();
+		System.out.println("완료된 수리 내역");
+		rs.getMyFinishList();
 	}
 	
 	//회원 삭제 

@@ -15,7 +15,14 @@ public class Comments {
 	private String content;
 	private Date writeDate;
 	private int recommand;
+	private int trueNum;
 	
+	public int getTrueNum() {
+		return trueNum;
+	}
+	public void setTrueNum(int trueNum) {
+		this.trueNum = trueNum;
+	}
 	public int getNum() {
 		return num;
 	}

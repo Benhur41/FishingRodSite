@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.home.exe.FishExe;
+import com.home.fishDAO.FishDAO;
+import com.home.fishDAO.FishUser;
 
 public class RequestService {
 
@@ -14,14 +16,16 @@ public class RequestService {
 		List<Request> list = RequestDAO.getInstance().getRequstList();
 		
 		for(Request r : list) {
-			System.out.printf("no. %3d | 작성자 : %10s | 수리내용 : %5s | 수리현황 : %5s | 가격 : %5d\n" , r.getNum(),r.getNickName(), r.getRepair(), r.getState(), r.getDiscountPrice());
+			System.out.printf("no. %3d | 작성자 : %-10s  |  낚싯대 : %5s  | 수리내용 : %5s | 수리현황 : %5s | 가격 : %5.1f\n" , r.getNum(),r.getNickName(),r.getFishingRod(), r.getRepair(), r.getState(), r.getDiscountPrice());
 		}
 	}
 	
 	//saverq 조회
-	public void getMyFinish() {
-		Request rq = RequestDAO.getInstance().getMyFinish();
-		System.out.printf("수리명 : %-5s  |  할인가 : %f  |  상태  :  %s \n",rq.getRepair(),rq.getDiscountPrice(),rq.getState());
+	public void getMyFinishList() {
+		List<Request> list = RequestDAO.getInstance().getMyFinishList();
+		for( Request rq : list) {
+		System.out.printf("닉네임 : %-5s  |  낚싯대 : %5s  |  수리종류 : %-6s |  상태  :  %s \n",rq.getNickName(),rq.getFishingRod(),rq.getRepair(),rq.getState());
+		}
 	}
 	
 	//본인 신청 조회
@@ -29,7 +33,7 @@ public class RequestService {
 		List<Request> list = RequestDAO.getInstance().getMyRequstList(FishExe.fishUserInfo.getNickName());
 		
 		for(Request r : list) {
-			System.out.println(" 작성자 : "+r.getNickName() + " 수리내용 : " + r.getRepair()+ " 수리현황 : " + r.getState() + " 가격 : " + r.getDiscountPrice());
+			System.out.printf(" 작성자 : %s | 낚싯대 : %5s | 수리내용 : %s | 수리현황 : %s | 가격 : %-5.1f\n",r.getNickName(), r.getFishingRod(), r.getRepair(), r.getState(), r.getDiscountPrice());
 		}
 	}
 	
@@ -105,8 +109,30 @@ public class RequestService {
 	//수리 신청글 method1
 	private int write(int selectNo) {
 		int result =0;
+		String rod = "";
+		FishUser fu = FishDAO.getInstance().getUser(FishExe.fishUserInfo.getId());
+		String[] rodArr = {fu.getFishingRod1(),fu.getFishingRod2(),fu.getFishingRod3(),fu.getFishingRod4(),fu.getFishingRod5()};
+		System.out.println("본인의 낚싯대를 선택해주세요");
+		for(int i = 0 ; i< rodArr.length ; i ++) {
+			if(!rodArr[i].equals("없음")) {
+			System.out.printf(" "+ (i+1)+")" + rodArr[i]);
+			}
+		}
+		int choice = Integer.parseInt(sc.nextLine());
+		if(choice ==1) {
+			rod = fu.getFishingRod1();
+		}else if(choice ==2) {
+			rod = fu.getFishingRod2();
+		}else if(choice ==3) {
+			rod = fu.getFishingRod3();
+		}else if(choice ==4) {
+			rod = fu.getFishingRod4();
+		}else if(choice ==5) {
+			rod = fu.getFishingRod5();
+		}
 		Request request = new Request();
 		request.setRpNum(selectNo);
+		request.setFishingRod(rod);
 		request.setNickName(FishExe.fishUserInfo.getNickName());
 		request.setState("N");
 		result = RequestDAO.getInstance().writeRq(request);

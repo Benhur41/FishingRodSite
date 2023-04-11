@@ -6,6 +6,7 @@ import java.util.List;
 import com.home.common.DAO;
 import com.home.exe.FishExe;
 
+
 public class CommentsDAO extends DAO {
 	
 	private static CommentsDAO commentsDao = new CommentsDAO();
@@ -45,8 +46,27 @@ public class CommentsDAO extends DAO {
 		}
 		return list;
 	}
-	
-	
+	//num 으로 truenum 불러오기
+	public Comments getTN(int no) {
+		Comments cms = null;
+		try {
+			conn();
+			String sql = "SELECT true_num FROM comments WHERE num =? AND co_num = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, no);
+			pstmt.setInt(2, FishExe.communityInfo.getCoNum());
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				cms = new Comments();
+				cms.setTrueNum(rs.getInt("true_num"));
+			}
+		}catch(Exception e) {
+		e.printStackTrace();
+		}finally {
+		disconn();
+		}
+		return cms;
+	}
 	//추천 기능
 	public int CMRecommand(int num) {
 		int result = 0;
@@ -69,7 +89,7 @@ public class CommentsDAO extends DAO {
 		int result = 0;
 		try {
 			conn();
-			String sql = "INSERT INTO comments VALUES ( ?,NVL((SELECT max(num) FROM comments WHERE co_num =?) +1,1) ,? ,? ,sysdate,0)";
+			String sql = "INSERT INTO comments VALUES ( NVL((SELECT max(true_num) FROM comments)+1,1),?,NVL((SELECT max(num) FROM comments WHERE co_num =?) +1,1) ,? ,? ,sysdate,0)";
 			pstmt =conn.prepareStatement(sql);
 			pstmt.setInt(1, FishExe.communityInfo.getCoNum());
 			pstmt.setInt(2, FishExe.communityInfo.getCoNum());
@@ -108,7 +128,7 @@ public class CommentsDAO extends DAO {
 		Comments cm = null;
 		try {
 			conn();
-			String sql = "SELECT nick_name FROM comments WHERE num =?";
+			String sql = "SELECT nick_name,true_num FROM comments WHERE num =?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, num);
 			
@@ -117,6 +137,7 @@ public class CommentsDAO extends DAO {
 			if(rs.next()) {
 				cm = new Comments();
 				cm.setNickName(rs.getString("nick_name"));
+				cm.setTrueNum(rs.getInt("true_num"));
 			}
 					
 		}catch(Exception e) {
@@ -125,5 +146,87 @@ public class CommentsDAO extends DAO {
 		disconn();
 		}
 		return cm;
+	}
+	
+	//글 추천테이블 리스트 조회
+	public List<Comments> duplication(int coNum){
+		List<Comments> list = new ArrayList<>();
+		Comments cm = null;
+		try {
+			conn();
+			String sql = "SELECT * FROM recommand_safe WHERE co_num =?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, coNum);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				cm = new Comments();
+				cm.setCoNum(rs.getInt("co_num"));
+				cm.setNickName(rs.getString("nick_name"));
+				list.add(cm);
+			}
+		}catch(Exception e) {
+		e.printStackTrace();
+		}finally {
+		disconn();
+		}
+		return list;
+	}
+	//댓글 추천 테이블리스트조회
+	public List<Comments> CMduplication(int tn){
+		List<Comments> list = new ArrayList<>();
+		Comments cm = null;
+		try {
+			conn();
+			String sql = "SELECT * FROM recommand_safe_CMS WHERE true_num =?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, tn);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				cm = new Comments();
+				cm.setCoNum(rs.getInt("true_num"));
+				cm.setNickName(rs.getString("nick_name"));
+				list.add(cm);
+			}
+		}catch(Exception e) {
+		e.printStackTrace();
+		}finally {
+		disconn();
+		}
+		return list;
+	}
+	
+	//추천 테이블에 삽입기능
+	public int putRecoSafe() {
+		int result = 0;
+		try {
+			conn();
+			String sql = " INSERT INTO recommand_safe VALUES (?,?)";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, FishExe.communityInfo.getCoNum());
+			pstmt.setString(2, FishExe.fishUserInfo.getNickName());
+			result = pstmt.executeUpdate();
+		}catch(Exception e) {
+		e.printStackTrace();
+		}finally {
+		disconn();
+		}
+		return result;
+	}
+	//댓글 추천위한 삽입기능
+	public int putRecoSafeCM(int tn) {
+		int result = 0;
+		try {
+			conn();
+			String sql = " INSERT INTO recommand_safe_CMS VALUES (?,?)";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, tn);
+			pstmt.setString(2, FishExe.fishUserInfo.getNickName());
+			result = pstmt.executeUpdate();
+		}catch(Exception e) {
+		e.printStackTrace();
+		}finally {
+		disconn();
+		}
+		return result;
 	}
 }

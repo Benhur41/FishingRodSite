@@ -15,8 +15,15 @@ public class Request {
 	private int rpNum;
 	private String state;
 	private int count;
+	private String fishingRod;
 	
 	
+	public String getFishingRod() {
+		return fishingRod;
+	}
+	public void setFishingRod(String fishingRod) {
+		this.fishingRod = fishingRod;
+	}
 	public int getCount() {
 		return count;
 	}

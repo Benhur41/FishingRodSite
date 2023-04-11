@@ -30,7 +30,7 @@ public class RequestDAO extends DAO {
 		Request request = null;
 		try {
 			conn();
-			String sql = "SELECT num, nick_name, repair, decode(state , 'R' , '수리중',\r\n"
+			String sql = "SELECT num, nick_name,fishingRod, repair, decode(state , 'R' , '수리중',\r\n"
 					+ "                                              'P' , '배송중',\r\n"
 					+ "                                                    '수리전') \"state\",decode(customer_grade,'A',price*0.9,\r\n"
 					+ "                                                             'B',price*0.95,\r\n"
@@ -39,7 +39,6 @@ public class RequestDAO extends DAO {
 					+ "FROM fishuser \r\n"
 					+ "join request using (nick_name)\r\n"
 					+ "join repair using (rp_num)\r\n"
-					+ "WHERE nick_name = 'benhur41'\r\n"
 					+ "ORDER BY num";
 			
 			pstmt = conn.prepareStatement(sql);
@@ -50,6 +49,7 @@ public class RequestDAO extends DAO {
 				request = new Request();
 				request.setNum(rs.getInt("num"));
 				request.setNickName(rs.getString("nick_name"));
+				request.setFishingRod(rs.getString("fishingRod"));
 				request.setRepair(rs.getString("repair"));
 				request.setState(rs.getString("state"));
 				request.setDiscountPrice(rs.getInt("discount_price"));
@@ -70,7 +70,7 @@ public class RequestDAO extends DAO {
 		Request request = null;
 		try {
 			conn();
-			String sql = "SELECT num, nick_name, repair, decode(state , 'R' , '수리중',\r\n"
+			String sql = "SELECT num, nick_name,fishingRod, repair, decode(state , 'R' , '수리중',\r\n"
 					+ "                                              'P' , '배송중',\r\n"
 					+ "                                                    '수리전') \"state\",decode(customer_grade,'A',price*0.9,\r\n"
 					+ "                                                             'B',price*0.95,\r\n"
@@ -91,6 +91,7 @@ public class RequestDAO extends DAO {
 //				request.setNum(rs.getInt("num"));
 				request.setNickName(rs.getString("nick_name"));
 				request.setRepair(rs.getString("repair"));
+				request.setFishingRod(rs.getString("fishingRod"));
 				request.setState(rs.getString("state"));
 				request.setDiscountPrice(rs.getInt("discount_price"));
 				
@@ -126,20 +127,20 @@ public class RequestDAO extends DAO {
 	
 	//delete request row + number update
 	public int deleteRequest(int num) {
-		int result = 0;
+		int result1 = 0;
 		try {
 			conn();
 			String sql = "DELETE FROM request WHERE num = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, num);
 			
-			result = pstmt.executeUpdate();
-			if(result >0) {
+			result1 = pstmt.executeUpdate();
+			if(result1 >0) {
 				String sql2 = "UPDATE request SET num = num-1 WHERE num > ?";
 				pstmt = conn.prepareStatement(sql2);
 				pstmt.setInt(1, num);
 				
-				result = pstmt.executeUpdate();
+				int result = pstmt.executeUpdate();
 			}else {
 				System.out.println("번호 갱신에 실패했습니다");
 			}
@@ -148,7 +149,7 @@ public class RequestDAO extends DAO {
 		}finally {
 			disconn();
 		}
-		return result;
+		return result1;
 	}
 	
 	//saveRq 에 넣기
@@ -156,10 +157,12 @@ public class RequestDAO extends DAO {
 		int result = 0;
 		try {
 			conn();
-			String sql = "INSERT INTO saverq VALUES (?,?,'완')";
+			String sql = "INSERT INTO saverq VALUES (?,?,?,?,'완')";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, r.getNickName());
-			pstmt.setInt(2, r.getRpNum());
+			pstmt.setString(2, r.getFishingRod());
+			pstmt.setInt(3, r.getRpNum());
+			pstmt.setDouble(4, r.getDiscountPrice());
 			
 			result = pstmt.executeUpdate();
 			if(result > 0) {
@@ -213,11 +216,12 @@ public class RequestDAO extends DAO {
 		int result = 0;
 		try {
 			conn();
-			String sql = "INSERT INTO request VALUES ((SELECT max(num)FROM request)+1,?,?,?)";
+			String sql = "INSERT INTO request VALUES (NVL((SELECT max(num)FROM request)+1,1),?,?,?,?)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, r.getNickName());
-			pstmt.setInt(2, r.getRpNum());
-			pstmt.setString(3, r.getState());
+			pstmt.setString(2, r.getFishingRod());
+			pstmt.setInt(3, r.getRpNum());
+			pstmt.setString(4, r.getState());
 			
 			result = pstmt.executeUpdate();
 			
@@ -242,6 +246,7 @@ public class RequestDAO extends DAO {
 				rq = new Request();
 				rq.setNickName(rs.getString("nick_name"));
 				rq.setRpNum(rs.getInt("rp_num"));
+				rq.setFishingRod(rs.getString("fishingRod"));
 			}
 		}catch(Exception e) {
 		e.printStackTrace();
@@ -252,34 +257,36 @@ public class RequestDAO extends DAO {
 	}
 	
 	//본인의 완료된 request 조회 
-	public Request getMyFinish() {
+	public List<Request> getMyFinishList() {
+		List<Request> list = new ArrayList<>();
 		Request rq = null;
 		try {
 			conn();
-			String sql = "SELECT repair , decode( customer_grade , 'A' ,price*0.9,\r\n"
-					+ "                                        'B' , price*0.95,\r\n"
-					+ "                                        'C' , price*0.98) as \"discount\",state\r\n"
-					+ "FROM repair \r\n"
-					+ "join request USING (rp_num)\r\n"
-					+ "join fishuser USING (nick_name)\r\n"
+			String sql = "SELECT nick_name ,fishingRod, decode(rp_num,1,'세척/점검',\r\n"
+					+ "                                2,'초리복원',\r\n"
+					+ "                                3,'탑교환',\r\n"
+					+ "                                4,'손잡이대복원',\r\n"
+					+ "                                5,'가이드교환') \"repair\" ,state\r\n"
+					+ "FROM saverq\r\n"
 					+ "WHERE nick_name = ?";
 			
 			pstmt =conn.prepareStatement(sql);
 			pstmt.setString(1, FishExe.fishUserInfo.getNickName());
 			rs = pstmt.executeQuery();
-			if(rs.next()) {
+			while(rs.next()) {
 				rq = new Request();
 				rq.setRepair(rs.getString("repair"));
-				rq.setDiscountPrice(rs.getDouble("discount"));
+				rq.setFishingRod(rs.getString("fishingRod"));
+				rq.setNickName(rs.getString("nick_name"));
 				rq.setState(rs.getString("state"));
-				
+				list.add(rq);
 			}
 		}catch(Exception e) {
 		e.printStackTrace();
 		}finally {
 		disconn();
 		}
-		return rq;
+		return list;
 	}
 	
 	

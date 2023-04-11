@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.home.exe.FishExe;
+import com.yedam.community.CommDAO;
 import com.yedam.community.Community;
 
 public class CMService {
@@ -18,17 +19,59 @@ public class CMService {
 		}
 	}
 	
+//	public void recommandComm() {
+//		int isThere = 0;
+//		List<Comments> list = CommentsDAO.getInstance().duplication(FishExe.communityInfo.getCoNum());
+//		for(Comments c : list) {
+//			if(c.getNickName().equals(FishExe.fishUserInfo.getNickName())) {
+//				isThere++;
+//			}
+//		}	
+//		if(isThere >0) {
+//			System.out.println("한 글당 한번만 추천 가능합니다.");
+//		}else{
+//				int result1 = CommentsDAO.getInstance().putRecoSafe();
+//				if(result1 > 0) {
+//					
+//					int result = CommDAO.getInstance().recommandComm();
+//					if(result > 0) {
+//						Community cm = CommDAO.getInstance().getComm(FishExe.communityInfo.getCoNum());
+//						FishExe.communityInfo =cm;
+//						
+//						System.out.println("추천이 완료 되었습니다");
+//					}else {
+//						System.out.println("추천 실패하였습니다.");
+//					}
+//				}
+//			}
+//	}
+	
 	//댓글추천
 	public void CMRecommand() {
+		int isThere = 0;
 		System.out.println("추천할 댓글 번호를 입력해주세요.");
 		System.out.println("입력 >");
 		int num = Integer.parseInt(sc.nextLine());
-		
-		int result = CommentsDAO.getInstance().CMRecommand(num);
-		if(result > 0) {
-			System.out.println("추천에 성공했습니다.");
+		Comments cms = CommentsDAO.getInstance().getCMInfo(num);
+		List<Comments> list = CommentsDAO.getInstance().CMduplication(cms.getTrueNum());
+		for(Comments c : list) {
+			if(c.getNickName().equals(FishExe.fishUserInfo.getNickName())) {
+				isThere++;
+			}
+		}
+		if(isThere > 0) {
+			System.out.println("계정당 한번만 추천이 가능합니다.");
 		}else {
-			System.out.println("추천에 실패했습니다.");
+			int result = CommentsDAO.getInstance().putRecoSafeCM(cms.getTrueNum());
+			if(result > 0) {
+				
+				int result1 = CommentsDAO.getInstance().CMRecommand(num);
+				if(result1 > 0) {
+					System.out.println("추천에 성공했습니다.");
+				}else {
+					System.out.println("추천에 실패했습니다.");
+				}
+			}
 		}
 	}
 	
@@ -63,7 +106,6 @@ public class CMService {
 			System.out.println("본인이 작성한 댓글만 지울수있습니다.");
 		}
 	}
-	
 	
 	
 	

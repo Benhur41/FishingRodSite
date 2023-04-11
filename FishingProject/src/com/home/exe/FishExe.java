@@ -1,5 +1,8 @@
 package com.home.exe;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import com.home.fishDAO.FishService;
@@ -182,18 +185,20 @@ public class FishExe {
 	private void deepCommScreen() {
 		while(true) {
 			cs.getComm();
-			System.out.println("  1. 댓글 추천  |  2. 댓글 작성  |  3. 댓글 삭제  |  4. 나가기");
+			System.out.println("  1. 글 추천  |  2. 댓글 추천  |  3. 댓글 작성  |  4. 댓글 삭제  |  5. 나가기");
 			int selectNo = Integer.parseInt(sc.nextLine());
-			if(selectNo == 1) {
+			if(selectNo ==1){
+				cs.recommandComm();
+			}else if(selectNo == 2) {
 				//추천
 				cms.CMRecommand();
-			}else if(selectNo == 2) {
+			}else if(selectNo == 3) {
 				//댓글작성
 				cms.writeComment();
-			}else if(selectNo == 3) {
+			}else if(selectNo == 4) {
 				//댓글 삭제
 				cms.deleteComment();
-			}else if(selectNo == 4) {
+			}else if(selectNo == 5) {
 				FishExe.communityInfo = null;
 				break;
 			}

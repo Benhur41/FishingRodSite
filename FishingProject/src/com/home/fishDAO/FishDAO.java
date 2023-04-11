@@ -74,6 +74,7 @@ public class FishDAO extends DAO {
 				fishUser.setName(rs.getString("name"));
 				fishUser.setCustomerGrade(rs.getString("customer_grade"));
 				fishUser.setNick_name(rs.getString("nick_name"));
+				fishUser.setRepairCount(rs.getInt("repair_count"));
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -323,6 +324,33 @@ public class FishDAO extends DAO {
 		}
 		return result;
 	}
+	
+	//등급 업데이트 기능
+		public int gradeUpdate(int no) {
+			int result = 0;
+			try {
+				conn();
+				if(no ==1) {
+					String sql = "UPDATE fishuser SET customer_grade ='C' WHERE nick_name =?";
+					pstmt = conn.prepareStatement(sql);
+				}else if(no ==2) {
+					String sql = "UPDATE fishuser SET customer_grade = 'B' WHERE nick_name =?";
+					pstmt = conn.prepareStatement(sql);
+				}else if(no ==3) {
+					String sql = "UPDATE fishuser SET customer_grade = 'A' WHERE nick_name = ?";
+					pstmt = conn.prepareStatement(sql);
+				}
+				pstmt.setString(1, FishExe.fishUserInfo.getNickName());
+				
+				result = pstmt.executeUpdate();
+				
+			}catch(Exception e) {
+			e.printStackTrace();
+			}finally {
+			disconn();
+			}
+			return result;
+		}
 	
 	}
 
