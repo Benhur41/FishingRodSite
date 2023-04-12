@@ -35,6 +35,7 @@ public class CommDAO extends DAO {
 				comm.setWriteDate(rs.getDate("write_date"));
 				comm.setViews(rs.getInt("views"));
 				comm.setRecommand(rs.getInt("recommand"));
+				comm.setNonRecommand(rs.getInt("non_recommand"));
 				list.add(comm);
 			}
 		}catch(Exception e) {
@@ -50,7 +51,7 @@ public class CommDAO extends DAO {
 		Community comm = null;
 		try {
 			conn();
-			String sql = "SELECT co_num , title , nick_name , content , write_date , recommand FROM community WHERE co_num = ?";
+			String sql = "SELECT co_num , title , nick_name , content , write_date , recommand,non_recommand FROM community WHERE co_num = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, no);
 			rs = pstmt.executeQuery();
@@ -63,6 +64,7 @@ public class CommDAO extends DAO {
 				comm.setContent(rs.getString("content"));
 				comm.setWriteDate(rs.getDate("write_date"));
 				comm.setRecommand(rs.getInt("recommand"));
+				comm.setNonRecommand(rs.getInt("non_recommand"));
 				
 			}
 			
@@ -80,7 +82,7 @@ public class CommDAO extends DAO {
 		int result = 0;
 		try {
 			conn();
-			String sql = "INSERT INTO community VALUES (NVL((SELECT max(co_num) FROM community)+1,1),?,?,?,sysdate,0,0)";
+			String sql = "INSERT INTO community VALUES (NVL((SELECT max(co_num) FROM community)+1,1),?,?,?,sysdate,0,0,0)";
 			pstmt = conn.prepareStatement(sql);
 //			pstmt.setInt(1, comm.getCoNum());
 			pstmt.setString(1, comm.getNickName());
@@ -167,6 +169,23 @@ public class CommDAO extends DAO {
 		return result;
 	}
 	
+	//비추 기능
+	public int commThumbsDown() {
+		int result = 0;
+		try {
+			conn();
+			String sql = "UPDATE community SET non_recommand = non_recommand +1 WHERE co_num =?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, FishExe.communityInfo.getCoNum());
+			result = pstmt.executeUpdate();
+		}catch(Exception e) {
+		e.printStackTrace();
+		}finally {
+		disconn();
+		}
+		return result;
+		
+	}
 	// 조회수 추가 기능
 	public int updateView(int no) {
 		int result = 0;

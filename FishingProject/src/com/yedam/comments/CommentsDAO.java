@@ -25,7 +25,7 @@ public class CommentsDAO extends DAO {
 		Comments cm = null;
 		try {
 			conn();
-			String sql = "SELECT num , nick_name , content , write_date , recommand FROM comments WHERE co_num = ? ORDER BY num";
+			String sql = "SELECT num , nick_name , content , write_date , recommand,non_recommand FROM comments WHERE co_num = ? ORDER BY num";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, no);
 			rs = pstmt.executeQuery();
@@ -37,6 +37,7 @@ public class CommentsDAO extends DAO {
 				cm.setContent(rs.getString("content"));
 				cm.setWriteDate(rs.getDate("write_date"));
 				cm.setRecommand(rs.getInt("recommand"));
+				cm.setNonRecommand(rs.getInt("non_recommand"));
 				list.add(cm);
 			}
 		}catch(Exception e) {
@@ -72,9 +73,10 @@ public class CommentsDAO extends DAO {
 		int result = 0;
 		try {
 			conn();
-			String sql = "UPDATE comments SET recommand = recommand+1 WHERE num =?";
+			String sql = "UPDATE comments SET recommand = recommand+1 WHERE num =? AND co_num = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, num);
+			pstmt.setInt(2, FishExe.communityInfo.getCoNum());
 			result = pstmt.executeUpdate();
 		}catch(Exception e) {
 		e.printStackTrace();
@@ -84,12 +86,29 @@ public class CommentsDAO extends DAO {
 		return result;
 		
 	}
+	//댓글 비추 기능
+	public int CMNonRecommand(int num) {
+		int result = 0;
+		try {
+			conn();
+			String sql = "UPDATE comments SET non_recommand = non_recommand+1 WHERE num = ? AND co_num = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, num);
+			pstmt.setInt(2, FishExe.communityInfo.getCoNum());
+			result = pstmt.executeUpdate();
+		}catch(Exception e) {
+		e.printStackTrace();
+		}finally {
+		disconn();
+		}
+		return result;
+	}
 	//댓글 작성 기능
 	public int writeComment(String input) {
 		int result = 0;
 		try {
 			conn();
-			String sql = "INSERT INTO comments VALUES ( NVL((SELECT max(true_num) FROM comments)+1,1),?,NVL((SELECT max(num) FROM comments WHERE co_num =?) +1,1) ,? ,? ,sysdate,0)";
+			String sql = "INSERT INTO comments VALUES ( NVL((SELECT max(true_num) FROM comments)+1,1),?,NVL((SELECT max(num) FROM comments WHERE co_num =?) +1,1) ,? ,? ,sysdate,0,0)";
 			pstmt =conn.prepareStatement(sql);
 			pstmt.setInt(1, FishExe.communityInfo.getCoNum());
 			pstmt.setInt(2, FishExe.communityInfo.getCoNum());
@@ -137,9 +156,10 @@ public class CommentsDAO extends DAO {
 		Comments cm = null;
 		try {
 			conn();
-			String sql = "SELECT nick_name,true_num FROM comments WHERE num =?";
+			String sql = "SELECT nick_name,true_num FROM comments WHERE num =? AND co_num = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, num);
+			pstmt.setInt(2, FishExe.communityInfo.getCoNum());
 			
 			rs = pstmt.executeQuery();
 			
@@ -180,6 +200,29 @@ public class CommentsDAO extends DAO {
 		}
 		return list;
 	}
+	//글 비추천테이블 리스트 조회
+	public List<Comments> nonDuplication(int coNum){
+		List<Comments> list = new ArrayList<>();
+		Comments cms = null;
+		try {
+			conn();
+			String sql = "SELECT * FROM non_recommand_safe WHERE co_num = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, coNum);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				cms = new Comments();
+				cms.setCoNum(rs.getInt("co_num"));
+				cms.setNickName(rs.getString("nick_name"));
+				list.add(cms);
+			}
+		}catch(Exception e) {
+		e.printStackTrace();
+		}finally {
+		disconn();
+		}
+		return list;
+	}
 	//댓글 추천 테이블리스트조회
 	public List<Comments> CMduplication(int tn){
 		List<Comments> list = new ArrayList<>();
@@ -192,9 +235,32 @@ public class CommentsDAO extends DAO {
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				cm = new Comments();
-				cm.setCoNum(rs.getInt("true_num"));
+				cm.setTrueNum(rs.getInt("true_num"));
 				cm.setNickName(rs.getString("nick_name"));
 				list.add(cm);
+			}
+		}catch(Exception e) {
+		e.printStackTrace();
+		}finally {
+		disconn();
+		}
+		return list;
+	}
+	//댓글 비추천 테이블 리스트 조회
+	public List<Comments> CMNonDuplication(int tn){
+		List<Comments> list = new ArrayList<>();
+		Comments cms = null;
+		try {
+			conn();
+			String sql ="SELECT * FROM non_recommand_safe_CMS WHERE true_num =?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, tn);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				cms = new Comments();
+				cms.setTrueNum(rs.getInt("true_num"));
+				cms.setNickName(rs.getString("nick_name"));
+				list.add(cms);
 			}
 		}catch(Exception e) {
 		e.printStackTrace();
@@ -221,12 +287,46 @@ public class CommentsDAO extends DAO {
 		}
 		return result;
 	}
+	//글 비추천 테이블 삽입 기능
+	public int putNonRecoSafe() {
+		int result = 0;
+		try {
+			conn();
+			String sql = "INSERT INTO non_recommand_safe VALUES (?,?)";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, FishExe.communityInfo.getCoNum());
+			pstmt.setString(2, FishExe.fishUserInfo.getNickName());
+			result = pstmt.executeUpdate();
+		}catch(Exception e) {
+		e.printStackTrace();
+		}finally {
+		disconn();
+		}
+		return result;
+	}
 	//댓글 추천위한 삽입기능
 	public int putRecoSafeCM(int tn) {
 		int result = 0;
 		try {
 			conn();
 			String sql = " INSERT INTO recommand_safe_CMS VALUES (?,?)";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, tn);
+			pstmt.setString(2, FishExe.fishUserInfo.getNickName());
+			result = pstmt.executeUpdate();
+		}catch(Exception e) {
+		e.printStackTrace();
+		}finally {
+		disconn();
+		}
+		return result;
+	}
+	//댓글 비추천 위한 삽입 기능
+	public int putNonRecoSafeCM(int tn) {
+		int result = 0;
+		try {
+			conn();
+			String sql = "INSERT INTO non_recommand_safe_CMS VALUES (?,?)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, tn);
 			pstmt.setString(2, FishExe.fishUserInfo.getNickName());

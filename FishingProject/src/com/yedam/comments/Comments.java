@@ -16,7 +16,15 @@ public class Comments {
 	private Date writeDate;
 	private int recommand;
 	private int trueNum;
+	private int nonRecommand;
 	
+	
+	public int getNonRecommand() {
+		return nonRecommand;
+	}
+	public void setNonRecommand(int nonRecommand) {
+		this.nonRecommand = nonRecommand;
+	}
 	public int getTrueNum() {
 		return trueNum;
 	}

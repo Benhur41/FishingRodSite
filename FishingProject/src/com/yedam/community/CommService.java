@@ -14,9 +14,16 @@ public class CommService {
 	//글 전체 조회
 	public void getCommList() {
 		List<Community> list = CommDAO.getInstance().getCommList();
-		
-		for(Community c : list) {
-			System.out.printf("no.%d | 제목 : %-30s | 작성자 : %-10s | 작성일 : %s | 조회수 : %-4d | 추천수 : %-4d\n", c.getCoNum(), c.getTitle(), c.getNickName(), c.getWriteDate(), c.getViews(), c.getRecommand());
+		for(int i = 0 ; i < list.size(); i++) {
+			if(list.get(i).getNonRecommand() >30 && list.get(i).getRecommand()*3 < list.get(i).getNonRecommand()) {
+				CommDAO.getInstance().deleteComm(list.get(i).getCoNum());
+				list.remove(i);
+				i--;
+			}
+		}
+		List<Community> list2 = CommDAO.getInstance().getCommList();
+		for(Community c : list2) {
+			System.out.printf("no.%d | 제목 : %-30s | 작성자 : %-10s | 작성일 : %s | 조회수 : %-4d | 추천수 : %-4d  | 비추천수 : %-4d\n", c.getCoNum(), c.getTitle(), c.getNickName(), c.getWriteDate(), c.getViews(), c.getRecommand(),c.getNonRecommand());
 		}
 	}
 	
@@ -33,7 +40,7 @@ public class CommService {
 		FishExe.communityInfo = comm;
 		
 		System.out.printf("no.%d	|	%s				\n",comm.getCoNum() , comm.getTitle());
-		System.out.println("작성자 : "+comm.getNickName()+"   작성일 : "+comm.getWriteDate() +"      추천수 : "+comm.getRecommand());
+		System.out.println("작성자 : "+comm.getNickName()+"   작성일 : "+comm.getWriteDate() +"      추천수 : "+comm.getRecommand() +"      비추천수 : " + comm.getNonRecommand());
 		System.out.println("-------------------------------------------------------------------------");
 		System.out.printf("	  %-40s\n",comm.getContent());
 		System.out.println();
@@ -44,7 +51,7 @@ public class CommService {
 		cms.getCmList(no);
 		}else {
 			System.out.printf("no.%d	|	%s				\n",FishExe.communityInfo.getCoNum() , FishExe.communityInfo.getTitle());
-			System.out.println("작성자 : "+FishExe.communityInfo.getNickName()+"   작성일 : "+FishExe.communityInfo.getWriteDate()+ "      추천수 : " +FishExe.communityInfo.getRecommand() ); 
+			System.out.println("작성자 : "+FishExe.communityInfo.getNickName()+"   작성일 : "+FishExe.communityInfo.getWriteDate()+ "      추천수 : " +FishExe.communityInfo.getRecommand()  + "     비추천수 : " + FishExe.communityInfo.getNonRecommand() ); 
 			System.out.println("---------------------------------------------------------------");
 			System.out.printf("	  %s\n",FishExe.communityInfo.getContent());
 			System.out.println();
@@ -150,6 +157,32 @@ public class CommService {
 				}
 		}
 	
+	//글 비추 기능
+	public void commThumbsDown() {
+		int isThere =0;
+		List<Comments> list = CommentsDAO.getInstance().nonDuplication(FishExe.communityInfo.getCoNum());
+		for(Comments c : list) {
+			if(c.getNickName().equals(FishExe.fishUserInfo.getNickName())) {
+				isThere++;
+			}
+		}
+		if(isThere > 0) {
+			System.out.println("한 글당 한번 비추천 가능합니다.");
+		}else {
+			int result1 = CommentsDAO.getInstance().putNonRecoSafe();
+			if(result1 > 0) {
+				int result = CommDAO.getInstance().commThumbsDown();
+				if(result >0) {
+				Community cm = CommDAO.getInstance().getComm(FishExe.communityInfo.getCoNum());
+				FishExe.communityInfo =cm;
+				
+				System.out.println("비추천이 완료 되었습니다");
+				}else {
+					System.out.println("비추천 실패");
+				}
+			}
+		}
+	}
 	//조회수 업데이트 기능
 	public void updateView(int no) {
 		CommDAO.getInstance().updateView(no);

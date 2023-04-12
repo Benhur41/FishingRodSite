@@ -18,8 +18,15 @@ public class Community {
 	private Date writeDate;
 	private int views;
 	private int recommand;
+	private int nonRecommand;
 	
 	
+	public int getNonRecommand() {
+		return nonRecommand;
+	}
+	public void setNonRecommand(int nonRecommand) {
+		this.nonRecommand = nonRecommand;
+	}
 	public int getCoNum() {
 		return coNum;
 	}

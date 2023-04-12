@@ -15,7 +15,7 @@ public class CMService {
 		List<Comments> list = CommentsDAO.getInstance().getCmList(no);
 		
 		for(Comments c : list) {
-			System.out.printf("%3d)  %-30s 		  작성자 : %-10s  작성일 : %s 추천수 : %-3d\n",c.getNum() , c.getContent() , c.getNickName(), c.getWriteDate() , c.getRecommand()	);
+			System.out.printf("%3d)  %-30s 		  작성자 : %-10s  작성일 : %s 추천수 : %-3d   비추천수 : %-3d\n",c.getNum() , c.getContent() , c.getNickName(), c.getWriteDate() , c.getRecommand() ,c.getNonRecommand()	);
 		}
 	}
 	
@@ -70,6 +70,33 @@ public class CMService {
 					System.out.println("추천에 성공했습니다.");
 				}else {
 					System.out.println("추천에 실패했습니다.");
+				}
+			}
+		}
+	}
+	//댓글 비추천
+	public void CMNonRecommand() {
+		int isThere = 0;
+		System.out.println("비추천할 댓글 번호를 입력 해주세요.");
+		System.out.println("입력 >");
+		int num = Integer.parseInt(sc.nextLine());
+		Comments cms = CommentsDAO.getInstance().getCMInfo(num);
+		List<Comments> list = CommentsDAO.getInstance().CMNonDuplication(cms.getTrueNum());
+		for(Comments c : list) {
+			if(c.getNickName().equals(FishExe.fishUserInfo.getNickName())) {
+				isThere++;
+			}
+		}
+		if(isThere > 0) {
+			System.out.println("계정당 한번만 비추천이 가능합니다.");
+		}else {
+			int result1 = CommentsDAO.getInstance().putNonRecoSafeCM(cms.getTrueNum());
+			if(result1 > 0) {
+				int result = CommentsDAO.getInstance().CMNonRecommand(num);
+				if(result > 0) {
+					System.out.println("비추성공 ㅋㅋ");
+				}else {
+					System.out.println("비추실패");
 				}
 			}
 		}

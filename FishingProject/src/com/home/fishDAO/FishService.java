@@ -111,11 +111,11 @@ public class FishService {
 		String pw = sc.nextLine();
 		
 		fishUser = FishDAO.getInstance().login(id);
-		String grade = fishUser.getCustomerGrade();
 		if(fishUser != null) {
+			String grade = fishUser.getCustomerGrade();
 			if(fishUser.getPw().equals(pw)) {
 			System.out.println("정상적으로 로그인 되었습니다.");
-			System.out.println(fishUser.getName() + "님 환영합니다 😁😁");
+			System.out.println(fishUser.getName() + "님 환영합니다!!");
 			FishExe.fishUserInfo = fishUser;
 			if(FishExe.fishUserInfo.getRepairCount() >= 5) {
 				int result = FishDAO.getInstance().gradeUpdate(1);
@@ -123,7 +123,7 @@ public class FishService {
 					FishUser fishUser2 = FishDAO.getInstance().login(id);
 					FishExe.fishUserInfo = fishUser2;
 					if(!grade.equals(FishExe.fishUserInfo.getCustomerGrade())) {
-						System.out.println("회원등급이 한단계 올랐습니다!");
+						System.out.println("====회원등급이 한단계 올랐습니다!++====");
 					}
 				}
 			}else if(FishExe.fishUserInfo.getRepairCount() >= 10) {
@@ -132,7 +132,7 @@ public class FishService {
 					FishUser fishUser2 = FishDAO.getInstance().login(id);
 					FishExe.fishUserInfo = fishUser2;
 					if(!grade.equals(FishExe.fishUserInfo.getCustomerGrade())) {
-						System.out.println("회원등급이 한단계 올랐습니다!");
+						System.out.println("====회원등급이 한단계 올랐습니다!++====");
 					}
 				}
 			}else if(FishExe.fishUserInfo.getRepairCount() >= 20) {
@@ -141,7 +141,7 @@ public class FishService {
 					FishUser fishUser2 = FishDAO.getInstance().login(id);
 					FishExe.fishUserInfo = fishUser2;
 					if(!grade.equals(FishExe.fishUserInfo.getCustomerGrade())) {
-						System.out.println("회원등급이 한단계 올랐습니다!");
+						System.out.println("====회원등급이 한단계 올랐습니다!++====");
 					}
 				}
 			}
@@ -149,7 +149,7 @@ public class FishService {
 			}else {
 				System.out.println("비밀번호를 틀리셨습니다.");
 			}
-		}else {
+		}else{
 			System.out.println("아이디가 존재하지 않습니다.");
 		}
 		
