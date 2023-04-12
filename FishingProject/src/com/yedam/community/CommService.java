@@ -21,7 +21,24 @@ public class CommService {
 				i--;
 			}
 		}
+		
 		List<Community> list2 = CommDAO.getInstance().getCommList();
+//		for(int i = 0 ; i < list2.size(); i++) {
+//			for(int j = 0 ; j < list2.size()-1; j++) {
+//				if(list2.get(j).getRecommand()<list2.get(j+1).getRecommand()) {
+//					Community tmp = list2.get(j);
+//					list2.add(j,list2.get(j+1));
+//					list2.add(j+1,tmp);
+//					
+//				}
+//			}
+//		}
+//		for(Community c : list2) {
+//			if(c.getRecommand()>30) {
+//				System.out.printf("<<HOT>> ");
+//				System.out.println("-------------------------------------------------------------------");
+//			}
+//		}
 		for(Community c : list2) {
 			System.out.printf("no.%d | 제목 : %-30s | 작성자 : %-10s | 작성일 : %s | 조회수 : %-4d | 추천수 : %-4d  | 비추천수 : %-4d\n", c.getCoNum(), c.getTitle(), c.getNickName(), c.getWriteDate(), c.getViews(), c.getRecommand(),c.getNonRecommand());
 		}
