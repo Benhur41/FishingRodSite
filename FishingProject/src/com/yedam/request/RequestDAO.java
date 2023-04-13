@@ -38,7 +38,7 @@ public class RequestDAO extends DAO {
 					+ "                                                                 price) \"discount_price\"\r\n"
 					+ "FROM fishuser \r\n"
 					+ "join request using (nick_name)\r\n"
-					+ "join repair using (rp_num)\r\n"
+					+ "join repairs using (rp_num)\r\n"
 					+ "ORDER BY num";
 			
 			pstmt = conn.prepareStatement(sql);
@@ -78,7 +78,7 @@ public class RequestDAO extends DAO {
 					+ "                                                                 price) \"discount_price\"\r\n"
 					+ "FROM fishuser \r\n"
 					+ "join request using (nick_name)\r\n"
-					+ "join repair using (rp_num)\r\n"
+					+ "join repairs using (rp_num)\r\n"
 					+ "WHERE nick_name = ? ";
 			
 			pstmt = conn.prepareStatement(sql);
@@ -153,6 +153,80 @@ public class RequestDAO extends DAO {
 		return result1;
 	}
 	
+	//수리번호로 돈값 가져오기
+	public Request getPrice (int no) {
+		Request rq = null;
+		try {
+			conn();
+			String sql = "SELECT num, nick_name,fishingRod,rp_num, repair, decode(state , 'R' , '수리중',\r\n"
+					+ "                                                        'P' , '배송중',\r\n"
+					+ "                                                             '수리전') \"state\" ,decode(customer_grade,'A',price*0.9,\r\n"
+					+ "					                                                             'B',price*0.95,\r\n"
+					+ "					                                                            'C',price*0.97,\r\n"
+					+ "					                                                                 price) \"discount_price\"\r\n"
+					+ "FROM fishuser \r\n"
+					+ "join request using (nick_name)\r\n"
+					+ "join repairs using (rp_num)\r\n"
+					+ "WHERE num =?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, no);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				rq = new Request();
+				rq.setDiscountPrice(rs.getDouble("discount_price"));
+				rq.setRpNum(rs.getInt("rp_num"));
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			disconn();
+		}
+		return rq;
+	}
+	
+	
+	//repair 에 매출 더하기
+	public int setPrice(Request r) {
+		int result = 0;
+		try {
+			conn();
+			String sql = "UPDATE repairs SET sales = sales + ? WHERE rp_num = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setDouble(1, r.getDiscountPrice());
+			pstmt.setInt(2, r.getRpNum());
+			result = pstmt.executeUpdate();
+			
+		}catch(Exception e ) {
+			e.printStackTrace();
+		}finally {
+			disconn();
+		}
+		return result;
+	}
+	//매출
+	public List<Request> getSales() {
+		List<Request> list = new ArrayList<>();
+		Request rq = null;
+		try {
+			conn();
+			String sql = "SELECT repair , count , sales\r\n"
+					+ "FROM repairs join (SELECT rp_num , count(rp_num) count FROM saverq GROUP BY rp_num) USING (rp_num)";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				rq = new Request();
+				rq.setCount(rs.getInt("count"));
+				rq.setSales(rs.getDouble("sales"));
+				rq.setRepair(rs.getString("repair"));
+				list.add(rq);
+			}
+		}catch(Exception e) {
+		e.printStackTrace();
+		}finally {
+		disconn();
+		}
+		return list;
+	}
 	//saveRq 에 넣기
 	public int putSaveRq(Request r) {
 		int result = 0;
@@ -209,7 +283,33 @@ public class RequestDAO extends DAO {
 		}
 		return list;
 	}
-	
+	//saverq 에서 순위세기
+	public List<Request> getSaveRank(){
+		List<Request> list = new ArrayList<>();
+		Request request = null;
+		try {
+			conn();
+			String sql = "SELECT repair, count(repair) as \"count\"\r\n"
+					+ "FROM repairs  \r\n"
+					+ "join saverq using (rp_num)\r\n"
+					+ "group by repair\r\n"
+					+ "ORDER BY count(repair) DESC";
+			pstmt = conn.prepareStatement(sql);
+			
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				request = new Request();
+				request.setRepair(rs.getString("repair"));
+				request.setCount(rs.getInt("count"));
+				list.add(request);
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			disconn();
+		}
+		return list;
+	}
 	//본인 신청글 조회
 	
 	

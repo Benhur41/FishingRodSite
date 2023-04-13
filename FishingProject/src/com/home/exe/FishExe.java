@@ -64,7 +64,7 @@ public class FishExe {
 		String menu = "";
 		if(FishExe.fishUserInfo != null) {
 		while(true) {
-			System.out.println("1. 수리 신청 현황  2. 낚싯대 수리요청 종류 순위  3.사용자 낚싯대 브랜드 순위 4. 회원조회  5. 단일 회원조회  6. 회원삭제  7. 게시판 관리  8. 로그아웃");
+			System.out.println("1. 수리 신청 현황  2. 수리요청순위 및 매출  3.사용자 낚싯대 브랜드 순위 4. 회원조회  5. 단일 회원조회  6. 회원삭제  7. 게시판 관리  8. 로그아웃");
 			System.out.println("번호 입력 >");
 			menu = sc.nextLine();
 			if (menu.equals("1")) {

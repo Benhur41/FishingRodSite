@@ -16,8 +16,15 @@ public class Request {
 	private String state;
 	private int count;
 	private String fishingRod;
+	private double sales;
 	
 	
+	public double getSales() {
+		return sales;
+	}
+	public void setSales(double sales) {
+		this.sales = sales;
+	}
 	public String getFishingRod() {
 		return fishingRod;
 	}

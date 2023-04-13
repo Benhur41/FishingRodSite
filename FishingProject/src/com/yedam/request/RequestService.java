@@ -90,12 +90,21 @@ public class RequestService {
 	
 	//수리 요청 순위
 	public void getRanking() {
-		List<Request> list = RequestDAO.getInstance().getRanking();
+		List<Request> saveList = RequestDAO.getInstance().getSaveRank();
 		int i = 1;
-		for(Request r : list) {
-			
-			System.out.println(i++ +" 순위 : " + r.getRepair() + " 신청 건수 : " + r.getCount() );
+		for(Request r : saveList) {
+			System.out.println(i++ +" 순위 : " + r.getRepair() + " 신청 건수 " + r.getCount() + " 회" );
 		}
+		List<Request> salesList = RequestDAO.getInstance().getSales();
+		double sum = 0;
+		System.out.println();
+		for(Request r : salesList) {
+			System.out.println(r.getRepair() +" | "+ r.getCount()+ " 번 | 합계 :"+ r.getSales()+" 원 ");
+			sum += r.getSales();
+		}
+		System.out.println();
+		System.out.println("총 매출은 " + sum + " 원 입니다.");
+		
 	}
 	
 	//수리 신청글 작성
@@ -180,7 +189,8 @@ public class RequestService {
 			no = 0;
 		}
 		Request rq = RequestDAO.getInstance().getRequest(no);
-		
+		Request salesRq = RequestDAO.getInstance().getPrice(no);
+		RequestDAO.getInstance().setPrice(salesRq);
 		int result = RequestDAO.getInstance().deleteRequest(no);
 		if(result > 0) {
 			result = RequestDAO.getInstance().putSaveRq(rq);

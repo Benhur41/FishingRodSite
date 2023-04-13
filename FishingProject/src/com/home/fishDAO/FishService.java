@@ -57,7 +57,7 @@ public class FishService {
 			int rodNum = Integer.parseInt(sc.nextLine());
 			for(int i = 0 ; i <rodNum ; i++) {
 				System.out.println(i+1 +"번째로 등록하실 낚싯대 제품브랜드를 선택해주세요 >");
-				System.out.println("1. 다이와  |  2.  시마노  |  3.  은성  |  4.  바낙스  | 5. ns  ");
+				System.out.println("1. 다이와  |  2.  시마노  |  3.  은성  |  4.  바낙스  | 5. ns  | 6. 기타");
 				int num = Integer.parseInt(sc.nextLine());
 				if(num == 1) {
 					rodList[i] = "daiwa:";
@@ -69,6 +69,8 @@ public class FishService {
 					rodList[i] = "banax:";
 				}else if (num == 5) {
 					rodList[i] = "ns:";
+				}else if (num == 6) {
+					rodList[i] = "";
 				}
 				System.out.println("제품명을 입력해주세요");
 				String rodName = sc.nextLine();
@@ -351,6 +353,8 @@ public class FishService {
 			updateRod(no);
 			break;
 		case 99:
+			FishUser fu = FishDAO.getInstance().login(FishExe.fishUserInfo.getId());
+			FishExe.fishUserInfo = fu;
 			run = false;
 			break;
 		}
