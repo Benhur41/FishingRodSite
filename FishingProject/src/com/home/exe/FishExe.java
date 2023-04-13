@@ -27,7 +27,8 @@ public class FishExe {
 	}
 
 	private void run() {
-		while(true) {
+		boolean run = true;
+		while(run) {
 			if(FishExe.fishUserInfo != null) {
 				if(FishExe.fishUserInfo.getCustomerGrade().equals("M")) {
 					manager();
@@ -48,6 +49,7 @@ public class FishExe {
 					fu.register();
 				}else if(menu.equals("3")) {
 					System.out.println("종료 합니다.");
+					run = false;
 					break;
 				}else {
 					System.out.println("정확한 번호를 입력하세요~!");
@@ -151,12 +153,15 @@ public class FishExe {
 		String menu = "";
 		while(true) {
 		fu.getMine();
-		System.out.println("  1. 정보 수정  |  2. 뒤로가기");
+		System.out.println("  1. 정보 수정  |  2. 수리신청 취소  | 3. 뒤로가기");
 		menu = sc.nextLine();
 			if(menu.equals("1")) {
 				//정보수정
 				fu.fishUserUpdate();
 			}else if(menu.equals("2")) {
+				//수리 신청 취소
+				rs.deleteRequest();
+			}else if(menu.equals("3")) {
 				//나가기
 				break;
 			}else {

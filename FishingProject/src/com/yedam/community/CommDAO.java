@@ -22,7 +22,7 @@ public class CommDAO extends DAO {
 		Community comm = null;
 		try {
 			conn();
-			String sql = "SELECT * FROM community ORDER BY co_num DESC";
+			String sql = "SELECT * FROM community ORDER BY co_num ";
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			
@@ -38,10 +38,41 @@ public class CommDAO extends DAO {
 				comm.setNonRecommand(rs.getInt("non_recommand"));
 				list.add(comm);
 			}
+			
+			
 		}catch(Exception e) {
 			e.printStackTrace();
 		}finally {
 			disconn();
+		}
+		return list;
+	}
+	
+	//추천랭킹글 
+	public List<Community> getRecoRank(){
+		List<Community> list = new ArrayList<>();
+		Community comm = null;
+		try {
+			conn();
+			String sql = "SELECT * FROM community WHERE recommand >30 ORDER BY recommand DESC";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				comm = new Community();
+				comm.setCoNum(rs.getInt("co_num"));
+				comm.setNickName(rs.getString("nick_name"));
+				comm.setTitle(rs.getString("title"));
+				comm.setContent(rs.getString("content"));
+				comm.setWriteDate(rs.getDate("write_date"));
+				comm.setViews(rs.getInt("views"));
+				comm.setRecommand(rs.getInt("recommand"));
+				comm.setNonRecommand(rs.getInt("non_recommand"));
+				list.add(comm);
+			}
+		}catch(Exception e) {
+		e.printStackTrace();
+		}finally {
+		disconn();
 		}
 		return list;
 	}

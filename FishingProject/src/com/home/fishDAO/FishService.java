@@ -248,16 +248,26 @@ public class FishService {
 		String id = sc.nextLine();
 		
 		FishUser f = FishDAO.getInstance().getUser(id);
+		if(f != null) {
 		System.out.printf(" ID : %-10s | PW : %-10s | 이름 : %-5s | 닉네임 : %-10s | 전화번호 : %s | 등급 : %s | 신청 횟수 : %-3d \n", f.getId(),f.getPw(),f.getName(),f.getNickName(),f.getCustomerPhone(),f.getCustomerGrade(),f.getRepairCount() );
 		System.out.printf(" 낚싯대 1 : %-10s |  낚싯대 2 : %-10s |  낚싯대 3 : %-10s | 낚싯대 4 : %-10s | 낚싯대 5 : %-10s\n", f.getFishingRod1(),f.getFishingRod2(),f.getFishingRod3(),f.getFishingRod4(),f.getFishingRod5());
+		}else {
+			System.out.println(" " + id + " 아이디를 쓰는 회원은 존재 하지 않습니다.");
+		}
 	}
 	
 	// 본인 조회
 	public void getMine() {
-		
+		                   
 		FishUser f = FishDAO.getInstance().getUser(FishExe.fishUserInfo.getId());
-		System.out.printf(" ID : %-10s | PW : %-10s | 이름 : %-5s | 닉네임 : %-10s | 전화번호 : %s | 등급 : %s | 신청 횟수 : %-3d \n", f.getId(),f.getPw(),f.getName(),f.getNickName(),f.getCustomerPhone(),f.getCustomerGrade(),f.getRepairCount() );
-		System.out.printf(" 낚싯대 1 : %-10s |  낚싯대 2 : %-10s |  낚싯대 3 : %-10s | 낚싯대 4 : %-10s | 낚싯대 5 : %-10s\n", f.getFishingRod1(),f.getFishingRod2(),f.getFishingRod3(),f.getFishingRod4(),f.getFishingRod5());
+		System.out.printf("| ID : %-10s                  낚싯대 1 : %-10s \n", f.getId(), f.getFishingRod1());
+		System.out.printf("| PW : %-10s                  낚싯대 2 : %-10s \n",f.getPw(),f.getFishingRod2());
+		System.out.printf("| 이름 : %-5s                   낚싯대 3 : %-10s \n",f.getName(),f.getFishingRod3());
+		System.out.printf("| 닉네임 : %-10s            낚싯대 4 : %-10s\n",f.getNickName(),f.getFishingRod4());
+		System.out.printf("| 전화번호 : %s          낚싯대 5 : %-10s\n",f.getCustomerPhone(),f.getFishingRod5());
+		System.out.printf("| 등급 : %s  \n",f.getCustomerGrade());
+		System.out.printf("| 신청 횟수 : %-3d \n",f.getRepairCount());
+		System.out.println();
 		System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------------");
 		System.out.println("현재 작업 중인 수리 내용");
 		RequestService rs = new RequestService();
@@ -367,19 +377,28 @@ public class FishService {
 	private int updateRod(int no) {
 		String reWrite ="";
 		int result = 0;
+		while(true) {
 		System.out.println("새롭게 등록하실 낚싯대의 제품브랜드를 선택해주세요 >");
 		System.out.println("1. 다이와  |  2.  시마노  |  3.  은성  |  4.  바낙스  | 5. ns  ");
-		int num = Integer.parseInt(sc.nextLine());
-		if(num == 1) {
+		String num = sc.nextLine();
+		if(num.equals("1")) {
 			reWrite = "daiwa:";
-		}else if (num == 2) {
+			break;
+		}else if (num.equals("2")) {
 			reWrite = "shimano:";
-		}else if (num == 3) {
+			break;
+		}else if (num.equals("3")) {
 			reWrite = "eunsung:";
-		}else if (num == 4) {
+			break;
+		}else if (num.equals("4")) {
 			reWrite = "banax:";
-		}else if (num == 5) {
+			break;
+		}else if (num.equals("5")) {
 			reWrite = "ns:";
+			break;
+		}else {
+			System.out.println("정확한 번호를 입력해주세요.");
+		}
 		}
 		System.out.println("제품명을 입력해주세요");
 		String rodName = sc.nextLine();

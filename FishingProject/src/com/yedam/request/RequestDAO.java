@@ -94,6 +94,7 @@ public class RequestDAO extends DAO {
 				request.setFishingRod(rs.getString("fishingRod"));
 				request.setState(rs.getString("state"));
 				request.setDiscountPrice(rs.getInt("discount_price"));
+				request.setNum(rs.getInt("num"));
 				
 				list.add(request);
 			}
@@ -110,7 +111,7 @@ public class RequestDAO extends DAO {
 		int result = 0;
 		try {
 			conn();
-			String sql = "UPDATE request SET state = ? WHERE num = ?";
+			String sql = "UPDATE request SET state = UPPER(?) WHERE num = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, grade);
 			pstmt.setInt(2, num);
@@ -210,6 +211,7 @@ public class RequestDAO extends DAO {
 	}
 	
 	//본인 신청글 조회
+	
 	
 	//신청글 작성
 	public int writeRq (Request r) {

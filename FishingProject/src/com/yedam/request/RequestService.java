@@ -33,39 +33,58 @@ public class RequestService {
 		List<Request> list = RequestDAO.getInstance().getMyRequstList(FishExe.fishUserInfo.getNickName());
 		
 		for(Request r : list) {
-			System.out.printf(" 작성자 : %s | 낚싯대 : %5s | 수리내용 : %s | 수리현황 : %s | 가격 : %-5.1f\n",r.getNickName(), r.getFishingRod(), r.getRepair(), r.getState(), r.getDiscountPrice());
+			System.out.printf(" 수리 번호 %d  작성자 : %s | 낚싯대 : %5s | 수리내용 : %s | 수리현황 : %s | 가격 : %-5.1f\n",r.getNum(), r.getNickName(), r.getFishingRod(), r.getRepair(), r.getState(), r.getDiscountPrice());
 		}
 	}
 	
+	
+	
 	//관리자의 신청자 수리현황 갱신
 	public void updateState() {
+		int num = 0;
 		System.out.println("수리현황 갱신할 글 번호를 입력해주세요");
 		System.out.println("입력 >");
-		int num = Integer.parseInt(sc.nextLine());
-		System.out.println("갱신할 상태 입력해주세요 (R: 수리중 P: 배송중 N: 수리 )");
+		try {
+			num = Integer.parseInt(sc.nextLine());
+		}catch(NumberFormatException e) {
+			num =0;
+		}
+		System.out.println("갱신할 상태 입력해주세요 (R: 수리중 P: 배송중 ");
 		System.out.println("입력 >");
 		String state = sc.nextLine();
-		
 		int result = RequestDAO.getInstance().updateState(state, num);
 		
 		if(result > 0) {
-			System.out.println("갱신에 성공했습니다.");
+			System.out.println("상태 갱신에 성공했습니다.");
 		}else {
-			System.out.println("갱신에 실패했습니다");
+			System.out.println("상태 갱신에 실패했습니다");
 		}
 	}
 	
 	//신청글 삭제
 	public void deleteRequest() {
+		int num =0;
 		System.out.println("삭제할 신청의 글 번호를 입력해주세요.");
-		int num = Integer.parseInt(sc.nextLine());
-		
+		try {
+			num = Integer.parseInt(sc.nextLine());
+		}catch(NumberFormatException e) {
+			num =0;
+		}
+		Request request = RequestDAO.getInstance().getRequest(num);
+		if(request !=null) {
+		if(FishExe.fishUserInfo.getNickName().equals(request.getNickName()) || FishExe.fishUserInfo.getId().equals("kty12")) {
 		int result = RequestDAO.getInstance().deleteRequest(num);
 		
 		if(result > 0 ) {
 			System.out.println("삭제 성공했습니다.");
 		}else {
 			System.out.println("삭제 실패했습니다.");
+		}
+		}else {
+			System.out.println("본인의 신청만 삭제 가능합니다.");
+		}
+		}else {
+			System.out.println("해당하는 번호의 신청글이 없습니다.");
 		}
 	}
 	
@@ -83,20 +102,29 @@ public class RequestService {
 	public void writeRq() {
 		int result = 0;
 		Request request = null;
+		while(true) {
 		System.out.println("원하시는 수리를 선택해주세요 >");
 		System.out.println(" 1. 세척/점검  |  2. 초리복원  |  3. 탑 교환  |  4. 손잡이대 복원  |  5. 가이드 교환  ");
 		
-		int selectNo = Integer.parseInt(sc.nextLine());
-		if(selectNo == 1) {
-			result = write(selectNo);
-		}else if(selectNo ==2) {
-			result = write(selectNo);
-		}else if(selectNo ==3) {
-			result = write(selectNo);
-		}else if(selectNo ==4) {
-			result = write(selectNo);
-		}else if(selectNo ==5) {
-			result = write(selectNo);
+		String selectNo = sc.nextLine();
+		if(selectNo.equals("1")) {
+			result = write(Integer.valueOf(selectNo));
+			break;
+		}else if(selectNo.equals("2")) {
+			result = write(Integer.valueOf(selectNo));
+			break;
+		}else if(selectNo.equals("3")) {
+			result = write(Integer.valueOf(selectNo));
+			break;
+		}else if(selectNo.equals("4")) {
+			result = write(Integer.valueOf(selectNo));
+			break;
+		}else if(selectNo.equals("5")) {
+			result = write(Integer.valueOf(selectNo));
+			break;
+		}else {
+			System.out.println("정확한 수리번호 입력해주세요.");
+		}
 		}
 		if(result > 0) {
 			System.out.println("신청에 성공하였습니다.");
@@ -143,18 +171,23 @@ public class RequestService {
 	
 	//delete + Insert into saverq
 	public void repairCountUp() {
+		int no = 0;
 		System.out.println("완료할 신청글의 번호를 선택하세요.");
 		System.out.println("입력 >");
-		int no = Integer.parseInt(sc.nextLine());
+		try {
+			no = Integer.parseInt(sc.nextLine());
+		}catch(NumberFormatException e) {
+			no = 0;
+		}
 		Request rq = RequestDAO.getInstance().getRequest(no);
 		
 		int result = RequestDAO.getInstance().deleteRequest(no);
 		if(result > 0) {
 			result = RequestDAO.getInstance().putSaveRq(rq);
 			if(result > 0 ) {
-				System.out.println("신청횟수 갱신에 성공했습니다");
+				System.out.println("상태 갱신에 성공했습니다");
 			}else {
-				System.out.println("신청횟수 갱신에 실패했습니다.");
+				System.out.println("상태 갱신에 실패했습니다.");
 			}
 		}else {
 			System.out.println("삭제 실패하였습니다.");
